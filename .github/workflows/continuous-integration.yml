@@ -19,22 +19,53 @@ jobs:
 
     strategy:
       matrix:
+        name:
+          - 'PHP 7.2 tests (Symfony 4.4)'
+          - 'PHP 7.3 tests (Symfony 4.4)'
+          - 'PHP 7.4 tests (Symfony 4.4)'
+          - 'PHP 7.4 tests (Symfony 5.1)'
+          - 'PHP 8.0 tests (Symfony 5.4)'
+          - 'PHP 8.0 tests (Symfony 6.0)'
         php-version:
           - "7.2"
           - "7.3"
           - "7.4"
           - "8.0"
           - "8.1"
+        symfony-version:
+          - "4.4.*"
+          - "5.4.*"
+          - "6.0.*"
         deps:
           - "lowest"
           - "highest"
         coverage:
           - "false"
         include:
-          - deps: "highest"
-            php-version: "7.4"
+          - php-version: '7.2'
+            symfony-version: 4.4.*
+            deps: "highest"
             coverage: "true"
-
+          - php-version: '7.3'
+            symfony-version: 4.4.*
+            deps: "highest"
+            coverage: "true"
+          - php-version: '7.4'
+            symfony-version: 4.4.*
+            deps: "highest"
+            coverage: "true"
+          - php-version: '7.4'
+            symfony-version: 5.1.*
+            deps: "highest"
+            coverage: "true"
+          - php-version: '8.0'
+            symfony-version: 5.4.*
+            deps: "highest"
+            coverage: "true"
+          - php-version: '8.0'
+            symfony-version: 6.0.*
+            deps: "highest"
+            coverage: "true"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v2"
@@ -47,7 +78,8 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           coverage: "pcov"
           ini-values: "zend.assertions=1"
-
+      - run: |
+          sed -ri 's/"symfony\/(.+)": "(.+)"/"symfony\/\1": "${{ matrix.symfony-version }}"/' composer.json;
       - name: "Install dependencies"
         uses: ramsey/composer-install@v1
         with:
